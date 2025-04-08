@@ -117,7 +117,10 @@
       const margeEuro = omzetExcl - totaleKosten;
       const margeProcent = (margeEuro / omzetExcl) * 100;
 
-      const breakEvenAantal = margeEuro > 0 ? Math.ceil(totaleConsultancyKosten / margeEuro) : "n.v.t.";
+      const margeZonderConsultancy = omzetExcl - (totaleInkoopkosten + feeExcl);
+      const breakEvenAantal = margeZonderConsultancy > 0
+        ? Math.ceil(totaleConsultancyKosten / margeZonderConsultancy)
+        : "n.v.t.";
 
       document.getElementById('result').innerHTML = `
         <h2>Samenvatting</h2>
@@ -130,7 +133,7 @@
           <li><strong>Kosten AMZ Consultancy per tas:</strong> €${consultancyPerTas.toFixed(2)}</li>
           <li><strong>Totale marge (in €):</strong> €${margeEuro.toFixed(2)}</li>
           <li><strong>Totale marge (%):</strong> ${margeProcent.toFixed(2)}%</li>
-          <li><strong>Break-even aantal tassen (AMZ consultancy/ad spend):</strong> ${breakEvenAantal}</li>
+          <li><strong>Break-even aantal tassen (om AMZ kosten terug te verdienen):</strong> ${breakEvenAantal}</li>
         </ul>
       `;
     }
