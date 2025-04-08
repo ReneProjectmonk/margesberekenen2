@@ -40,6 +40,100 @@
   </style>
 </head>
 <body>
-  <!-- De rest van de HTML blijft hetzelfde als in canvas -->
+  <h1>Uitgebreide Marge Calculator</h1>
+
+  <h2>Inkoopkosten (excl. btw)</h2>
+  <label for="inkoop">Inkoopprijs (€)</label>
+  <input type="number" id="inkoop" step="0.01">
+
+  <label for="korting">Korting op inkoop (%)</label>
+  <input type="number" id="korting" step="0.01">
+
+  <label for="import">Importkosten (€)</label>
+  <input type="number" id="import" step="0.01">
+
+  <label for="verzendInkoop">Verzendkosten inkoop (€)</label>
+  <input type="number" id="verzendInkoop" step="0.01">
+
+  <h2>Verkoopgegevens (incl. btw)</h2>
+  <label for="verkoop">Verkoopprijs (€)</label>
+  <input type="number" id="verkoop" step="0.01">
+
+  <label for="verzendVerkoop">Verzendkosten verkoop (€)</label>
+  <input type="number" id="verzendVerkoop" step="0.01">
+
+  <label for="btw">BTW percentage (%)</label>
+  <input type="number" id="btw" step="0.01" value="21">
+
+  <h2>Amazon Fee</h2>
+  <label for="fee">Fee Amazon (%)</label>
+  <input type="number" id="fee" step="0.01">
+
+  <h2>Consultancy & Advertising</h2>
+  <label for="consultancy">Kosten AMZ Consultancy (€ p/m)</label>
+  <input type="number" id="consultancy" step="0.01">
+
+  <label for="adspend">Ad spend AMZ Consultancy (€ p/m)</label>
+  <input type="number" id="adspend" step="0.01">
+
+  <label for="verwachtAantal">Verwacht aantal tassen per maand</label>
+  <input type="number" id="verwachtAantal" step="1">
+
+  <button onclick="berekenMarge()">Bereken Marge</button>
+
+  <div class="result" id="result"></div>
+
+  <script>
+    function berekenMarge() {
+      const inkoop = parseFloat(document.getElementById('inkoop').value);
+      const korting = parseFloat(document.getElementById('korting').value);
+      const importkosten = parseFloat(document.getElementById('import').value);
+      const verzendInkoop = parseFloat(document.getElementById('verzendInkoop').value);
+
+      const verkoopIncl = parseFloat(document.getElementById('verkoop').value);
+      const verzendVerkoopIncl = parseFloat(document.getElementById('verzendVerkoop').value);
+      const btwPerc = parseFloat(document.getElementById('btw').value);
+
+      const feePerc = parseFloat(document.getElementById('fee').value);
+
+      const consultancy = parseFloat(document.getElementById('consultancy').value);
+      const adspend = parseFloat(document.getElementById('adspend').value);
+      const verwachtAantal = parseFloat(document.getElementById('verwachtAantal').value);
+
+      const omzetIncl = verkoopIncl + verzendVerkoopIncl;
+      const omzetExcl = omzetIncl / (1 + (btwPerc / 100));
+
+      const kortingBedrag = inkoop * (korting / 100);
+      const inkoopNaKorting = inkoop - kortingBedrag;
+      const totaleInkoopkosten = inkoopNaKorting + importkosten + verzendInkoop;
+
+      const feeBedragIncl = omzetIncl * (feePerc / 100);
+      const feeExcl = feeBedragIncl / (1 + (btwPerc / 100));
+
+      const totaleConsultancyKosten = consultancy + adspend;
+      const consultancyPerTas = totaleConsultancyKosten / verwachtAantal;
+
+      const totaleKosten = totaleInkoopkosten + feeExcl + consultancyPerTas;
+      const margeEuro = omzetExcl - totaleKosten;
+      const margeProcent = (margeEuro / omzetExcl) * 100;
+
+      const breakEvenAantal = margeEuro > 0 ? Math.ceil(totaleConsultancyKosten / margeEuro) : "n.v.t.";
+
+      document.getElementById('result').innerHTML = `
+        <h2>Samenvatting</h2>
+        <ul>
+          <li><strong>Totale inkoopkosten:</strong> €${totaleInkoopkosten.toFixed(2)}</li>
+          <li><strong>Totale omzet (incl. btw):</strong> €${omzetIncl.toFixed(2)}</li>
+          <li><strong>Totale omzet (excl. btw):</strong> €${omzetExcl.toFixed(2)}</li>
+          <li><strong>Fee Amazon (incl. btw):</strong> €${feeBedragIncl.toFixed(2)}</li>
+          <li><strong>Fee Amazon (excl. btw):</strong> €${feeExcl.toFixed(2)}</li>
+          <li><strong>Kosten AMZ Consultancy per tas:</strong> €${consultancyPerTas.toFixed(2)}</li>
+          <li><strong>Totale marge (in €):</strong> €${margeEuro.toFixed(2)}</li>
+          <li><strong>Totale marge (%):</strong> ${margeProcent.toFixed(2)}%</li>
+          <li><strong>Break-even aantal tassen (AMZ consultancy/ad spend):</strong> ${breakEvenAantal}</li>
+        </ul>
+      `;
+    }
+  </script>
 </body>
 </html>
